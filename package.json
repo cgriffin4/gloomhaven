@@ -1,0 +1,31 @@
+{
+  "name": "gloomhaven",
+  "version": "1.0.0",
+  "description": "P2P Companion App for the popular board game",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cgriffin4/gloomhaven.git"
+  },
+  "keywords": [
+    "gloomhaven",
+    "peerjs",
+    "p2p",
+    "webrtc"
+  ],
+  "author": "Griffin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cgriffin4/gloomhaven/issues"
+  },
+  "homepage": "https://github.com/cgriffin4/gloomhaven#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "jade": "^1.11.0",
+    "peer": "^0.2.8"
+  }
+}

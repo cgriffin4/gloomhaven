@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+	<title>Gloomhaven Companion</title>
+	
+	<style>
+		html, body {
+			height: 100%;
+		}
+		body {
+			display: flex;
+			flex-direction: column;
+			margin: 0;
+		}
+		header {
+			display: none;
+		}
+		main {
+			flex: 1 1 auto;
+		}
+	</style>
+
+	<script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
+  </head>
+  <body>
+	<header>
+		<h1>Gloomhaven Companion</h1>
+	</header>
+	<main>
+		<section>
+			<button onclick="onHosting()">Host</button>
+			<input type="number" id="hostID1" />
+			<input type="number" id="hostID2" />
+			<input type="number" id="hostID3" />
+			<input type="number" id="hostID4" />
+			<button onclick="onJoining()">Join</button>
+		</section>
+	</main>
+	<footer>
+		<nav>
+			<a href="https://github.com/cgriffin4/gloomhaven">GitHub</a>
+		</nav>
+	</footer>
+  </body>
+  <script>
+	  let peer;
+	function getRandomInt(max) {
+		return Math.floor(Math.random() * Math.floor(max - 1)) + 1;
+	}
+	function onHosting() {
+		let hostingID = [getRandomInt(6), getRandomInt(6), getRandomInt(6), getRandomInt(6)];
+		document.getElementById('hostID1').value = hostingID[0];
+		document.getElementById('hostID2').value = hostingID[1];
+		document.getElementById('hostID3').value = hostingID[2];
+		document.getElementById('hostID4').value = hostingID[3];
+		peer = new P2PConnection(hostingID.join(''));
+	}
+	function onJoining() {
+		peer = new P2PConnection();
+		let hostingID = [
+			document.getElementById('hostID1').value,
+			document.getElementById('hostID2').value,
+			document.getElementById('hostID3').value,
+			document.getElementById('hostID4').value
+		];
+		peer.connectTo(hostingID.join(''));
+	}
+	class P2PConnection {
+		constructor(hostingID) {
+			this.hostingID = hostingID;
+			this.isHost = (hostingID == true);
+			//this.peer = new Peer(hostingID, {key: 'rviya2uvzzuayvi'});//local would use host/port/path
+			this.peer = new Peer(hostingID, {
+				host: location.hostname,
+				port: location.port || (location.protocol === 'https:' ? 443 : 80),
+				path: 'peerjs'
+			})
+			this.peer.on('open', function(id) {
+				console.log('My peer ID is: ' + id);
+			});
+			//this.peer.on('connection', this.handleConnect)
+			this.peer.on('connection', this.handleConnect.bind(this));
+		}
+
+		handleConnect(conn) {
+			console.log(conn);
+			this.conn = conn;
+			this.conn.on('data', function(data) {
+				console.log('Received', data);
+
+				this.send('Right back at you.')
+			});
+		}
+
+		connectTo(destPeerID) {
+			this.conn = this.peer.connect(destPeerID);
+			this.conn.on('open', function() {
+				// Receive messages
+				this.on('data', function(data) {
+					console.log('Received', data);
+				});
+
+				// Send messages
+				this.send('Hello!');
+			});
+		}
+	}
+  </script>
+</html>
